@@ -8,6 +8,10 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/haffizaliraza/sqjson"
 readme = "README.md"
 keywords = ["json", "embedded-db", "database", "sqlite", "mmap"]
+categories = ["database-implementations", "data-structures", "filesystem"]
+documentation = "https://docs.rs/sqjson"
+homepage = "https://github.com/haffizaliraza/sqjson"
+
 
 [dependencies]
 memmap2 = "0.9"
