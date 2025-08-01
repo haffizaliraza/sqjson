@@ -1,6 +1,6 @@
 [package]
 name = "sqjson"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["Hafiz Ali Raza haffizaliraza@gmail.com"]
 description = "A simple JSON-based embedded database"
@@ -11,8 +11,10 @@ keywords = ["json", "embedded-db", "database", "sqlite", "mmap"]
 categories = ["database-implementations", "data-structures", "filesystem"]
 documentation = "https://docs.rs/sqjson"
 homepage = "https://github.com/haffizaliraza/sqjson"
-path = "src/lib.rs"
 
+[lib]
+name = "sqjson"
+path = "src/lib.rs"
 
 [dependencies]
 memmap2 = "0.9"
