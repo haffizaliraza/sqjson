@@ -1,3 +1,7 @@
+[![Crates.io](https://img.shields.io/crates/v/sqjson.svg)](https://crates.io/crates/sqjson)
+[![Documentation](https://docs.rs/sqjson/badge.svg)](https://docs.rs/sqjson)
+
+
 # sqjson
 
 **sqjson** is a simple, embedded, file-based key-value database using JSON values and memory-mapped files (like SQLite, but for JSON). It's written in pure Rust and has zero dependencies beyond `serde`, `memmap2`, and `thiserror`.
@@ -82,4 +86,4 @@ MIT OR Apache-2.0
 
 ## 👤 Author
 
-Made with ❤️ by [your name]
+Made with ❤️ by Hafiz Ali Raza
