@@ -1,5 +1,6 @@
 use crate::util::PAGE_SIZE;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum PageType {
     Free,
@@ -7,6 +8,7 @@ pub enum PageType {
     Index,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Page {
     pub id: u32,

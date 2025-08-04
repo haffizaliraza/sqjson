@@ -1,17 +1,16 @@
 use crate::{error::DbError, file::open_and_resize, util::PAGE_SIZE};
 use memmap2::MmapMut;
-use std::fs::File;
 
 pub struct Pager {
     mmap: MmapMut,
-    file: File,
+    // file: File,
 }
 
 impl Pager {
     pub fn new(path: &str) -> Result<Self, DbError> {
         let file = open_and_resize(path)?;
         let mmap = unsafe { MmapMut::map_mut(&file)? };
-        Ok(Self { mmap, file })
+        Ok(Self { mmap })
     }
 
     pub fn get_page(&self, page_id: u32) -> Result<&[u8], DbError> {
