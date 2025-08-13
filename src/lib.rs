@@ -99,3 +99,13 @@
 //! ```rust
 //! # use sqjson::{YourDb, DbError};
 //! # fn run() -> Result<(), DbErr
+
+mod db;
+mod pager;
+mod page;
+mod file;
+mod error;
+mod util;
+
+pub use db::YourDb;
+pub use error::DbError;
