@@ -15,13 +15,15 @@
 - File-based — stores data in a single `.db` file using fixed-size pages  
 - Flexible JSON values with `serde_json`  
 - Key-based storage and retrieval (`put`, `get`)  
-- Secondary index support: query records by arbitrary JSON field values  
-- Field-level access: fetch specific JSON fields without deserializing entire records  
-- Delete records by key  
-- Export full database snapshot to pretty JSON file  
+- Secondary index support: query records by arbitrary JSON field values (`query`)  
+- Filter records with custom predicates (`filter`)  
+- Pagination for queries (`query_page`)  
+- Export query results to JSON file (`export_query`)  
+- Field-level access: fetch specific JSON fields without deserializing entire records (`get_field`)  
+- Delete records by key (`delete`)  
+- Export full database snapshot to pretty JSON file (`export_to_file`)  
 - Memory-mapped I/O for efficient read/write performance  
 - Simple API, easy to embed in Rust projects  
-
 ---
 
 ## 📦 Installation
@@ -54,7 +56,7 @@ fn main() -> Result<(), DbError> {
     db.put("user:3", &json!({ "name": "Charlie", "age": 30, "city": "NY" }))?;
     db.put("user:4", &json!({ "name": "Diana", "age": 22, "city": "LA" }))?;
 
-    // Persist changes to disk
+    // Persist changes
     db.flush()?;
 
     // Show all records
@@ -71,12 +73,24 @@ fn main() -> Result<(), DbError> {
         println!("user:1 age is: {}", age);
     }
 
-    // Query records by field value (secondary index)
+    // Query by secondary index
     let users_age_30 = db.query("age", 30)?;
     println!("\nUsers with age 30: {:?}", users_age_30);
 
-    let users_city_ny = db.query("city", "NY")?;
-    println!("Users in NY: {:?}", users_city_ny);
+    // Filter records with a custom predicate
+    let older_than_24 = db.filter(|val| val["age"].as_u64().unwrap_or(0) > 24)?;
+    println!("\nUsers older than 24:");
+    for (key, user) in older_than_24 {
+        println!("{} => {}", key, user);
+    }
+
+    // Paginated query (first 1 user in NY)
+    let first_ny_user = db.query_page("city", "NY", 1, 0)?;
+    println!("\nFirst user in NY: {:?}", first_ny_user);
+
+    // Export query results to JSON
+    db.export_query("city", "LA", "la_users.json")?;
+    println!("Exported LA users to la_users.json");
 
     // Delete a record
     db.delete("user:3")?;
@@ -85,13 +99,9 @@ fn main() -> Result<(), DbError> {
     // Persist delete operation
     db.flush()?;
 
-    // Export entire DB to a pretty JSON file
+    // Export full DB
     db.export_to_file("backup.json")?;
-    println!("\nExported DB to backup.json");
-
-    // Show all records after deletion
-    println!("\n-- Final Records --");
-    db.show_all()?;
+    println!("\nExported full database to backup.json");
 
     Ok(())
 }
@@ -105,6 +115,9 @@ put(key, value)	Insert or update a JSON value under a string key
 get(key)	Retrieve a JSON value by key
 get_field(key, field)	Retrieve a specific JSON field of a record
 query(field, value)	Return list of keys where JSON field equals value
+filter(predicate)	Return key-value pairs matching a custom predicate
+query_page(field, value, limit, offset)	Paginated query results by field value
+export_query(field, value, path)	Export query results to JSON file
 delete(key)	Remove a record by key
 flush()	Persist index and data pages to disk
 show_all()	Print all stored key-value pairs (for debugging)

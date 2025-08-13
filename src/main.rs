@@ -38,6 +38,21 @@ fn main() -> Result<(), DbError> {
     let users_city_la = db.query("city", "LA")?;
     println!("🌆 Users in LA: {:?}", users_city_la);
 
+    // 🔄 Use `filter()` to get users older than 24
+    let older_than_24 = db.filter(|doc| doc["age"].as_u64().unwrap_or(0) > 24)?;
+    println!("\n🎯 Users older than 24:");
+    for (key, user) in older_than_24 {
+        println!("{} => {}", key, user);
+    }
+
+    // 🔢 Use `query_page()` for pagination (e.g., first user in NY)
+    let first_ny_user = db.query_page("city", "NY", 1, 0)?;
+    println!("\n📄 First user in NY via pagination: {:?}", first_ny_user);
+
+    // 📤 Use `export_query()` to export users in LA
+    db.export_query("city", "LA", "la_users.json")?;
+    println!("📦 Exported users in LA to la_users.json");
+
     // 🗑 Delete user
     db.delete("user:3")?;
     println!("\n🗑 Deleted user:3");

@@ -137,6 +137,40 @@ impl YourDb {
         }
     }
 
+    pub fn filter<F>(&self, predicate: F) -> Result<Vec<(String, Value)>, DbError>
+        where
+            F: Fn(&Value) -> bool,
+        {
+            let mut results = Vec::new();
+            for key in self.index.keys() {
+                if let Some(val) = self.get(key)? {
+                    if predicate(&val) {
+                        results.push((key.clone(), val));
+                    }
+                }
+            }
+            Ok(results)
+        }
+
+
+    pub fn query_page(&self, field: &str, value: impl Into<Value>, limit: usize, offset: usize) -> Result<Vec<String>, DbError> {
+        let keys = self.query(field, value)?;
+        Ok(keys.into_iter().skip(offset).take(limit).collect())
+    }
+
+
+    pub fn export_query(&self, field: &str, value: impl Into<Value>, path: &str) -> Result<(), DbError> {
+        let keys = self.query(field, value)?;
+        let mut map = HashMap::new();
+        for k in keys {
+            if let Some(v) = self.get(&k)? {
+                map.insert(k, v);
+            }
+        }
+        std::fs::write(path, serde_json::to_string_pretty(&map)?)?;
+        Ok(())
+    }
+
     pub fn export_to_file(&self, path: &str) -> Result<(), DbError> {
         use std::fs;
         let mut map = HashMap::new();
